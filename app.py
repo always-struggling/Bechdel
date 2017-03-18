@@ -9,12 +9,25 @@ CORS(app)
 
 data = Analyse('data\\bechdel_data.json')
 
-@app.route('/bechdel', methods=['GET'])
+
+@app.route('/bechdel_buttons', methods=['GET'])
+def get_buttons():
+    """
+
+    """
+    button_data = data.get_button_json()
+    return jsonify(button_data)
+
+@app.route('/bechdel_scatter', methods=['POST'])
 def get_scatter():
     """
 
     """
-    scatter_data = data.get_scatter_json()
+    x = json.loads(request.data.decode('utf-8'))['x']
+    y = json.loads(request.data.decode('utf-8'))['y']
+    r = json.loads(request.data.decode('utf-8'))['r']
+    z = json.loads(request.data.decode('utf-8'))['z']
+    scatter_data = data.get_scatter_json(x, y, r, z)
     return jsonify(scatter_data)
 
 
@@ -23,7 +36,8 @@ def get_bar():
     """
 
     """
-    field = json.loads(request.data.decode('utf-8'))['field']
-    spread = json.loads(request.data.decode('utf-8'))['spread']
-    bar_data = data.get_bar_json(field, spread)
+    x = json.loads(request.data.decode('utf-8'))['x']
+    z = json.loads(request.data.decode('utf-8'))['z']
+    y = json.loads(request.data.decode('utf-8'))['y']
+    bar_data = data.get_bar_json(x, z, y)
     return jsonify(bar_data)
