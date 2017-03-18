@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>The Bechdel Test</title>
+		<script type="text/javascript" src="../d3/d3.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+        
+
+		<style type="text/css">
+        
+        
+         div.bechdel_buttons{
+              position:absolute; 
+              top: 260px;
+              left: 1500px;
+
+            }
+            div.y_axis_buttons{
+              position:absolute; 
+              top: 260px;
+              left: 1800px;
+            }
+                    
+            div.x_axis_buttons{
+              position:absolute; 
+              top: 260px;
+              left: 1650px;
+            }
+            button.col_button{
+              display: block;
+            }
+            button.bechdel_button{
+              display: block;
+            }
+            button {
+              background-color: white;
+              border-radius: 4px;
+              color: grey;
+              border: 2px solid white;
+              width: 150px;
+              padding: 4px 30px;
+              font-size: 14px;
+              font-family: sans-serif;
+              -webkit-transition-duration: 0.4s; /* Safari */
+              transition-duration: 0.4s;
+            }
+            button:hover {
+              border: 2px solid grey;
+            }
+
+                    
+            .Title {
+                font-size: 40px;
+                font-family: sans-serif;
+                line-height: 11px;
+                color: Grey;
+                position:absolute; 
+                top: 35px;
+                left: 125px;
+            }
+            
+            .Intro {
+                font-size: 14px;
+                font-family: sans-serif;
+                line-height: 20px;
+                color: Grey;
+                position:absolute; 
+                top: 105px;
+                left: 125px;
+            }		
+    </style>
+	</head>
+	<body>
+
+      <p class="Title">Bechdel Analysis</p>
+      <p class="Intro"> An exploration into d3js and the Bechdel Test. </br> 
+                        A film passes the bedhdel test if at any point in the film, two named female
+                        characters have a conversation that is not about men.
+      </p>
+      
+      <div class="bechdel_buttons">
+        <button class="bechdel_button" id="1">Passed</button>
+        <button class="bechdel_button" id="0">Failed</button>
+        <button class="bechdel_button_toggle" id="toggle">Toggle</button>
+      </div>
+      <div class = 'x_axis_buttons'>
+        <button class="col_button" axis="x" id="Gross">Gross</button>
+        <button class="col_button" axis="x" id="Budget">Budget</button>
+        <button class="col_button" axis="x" id="imdbRating">IMDB</button>
+        <button class="col_button" axis="x" id="Metascore">Meta</button>
+        <button class="col_button" axis="x" id="AwardScore">Awards</button>
+        <button class="col_button" axis="x" id="Year">Year</button>
+        <button class="col_button" axis="x" id="Rated">Certificate</button>
+      </div>
+      <div class = 'y_axis_buttons'>
+        <button class="col_button" axis="y" id="T">Total</button>
+        <button class="col_button" axis="y" id="P">Percentage</button>
+      </div>
+      
+      <script>
+      
+            // Set margins, height and width for our svg element.
+            var margin = {top: 40, right: 120, bottom: 70, left: 120};
+            var w = 1400 - margin.left - margin.right;
+            var h = 600 - margin.top - margin.bottom;
+            var r = 8;
+            var fill_opac = 60;
+            var dur = 2500;
+            var fyScale = d3.scaleBand().range([h,0]);
+            var fxScale = d3.scaleBand().range([0,w]);
+            
+            // Create our svg element, this will be the container for our data visualisations
+            var svg = d3.select("body")
+                    .append("svg")
+                    .attr("width",  w + margin.left + margin.right)
+                    .attr("height", h + margin.top + margin.bottom)
+                    .append('g')
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    
+            // Position the svg
+            $("svg").css({top: 215, left: 125, position:'absolute'});
+            
+            // Append clip path to our SVG
+            svg.append("clipPath")
+               .attr("id", "chart-area")
+               .append("rect")
+               .attr("x", 0)
+               .attr("y", 0)
+               .attr("width", w )
+               .attr("height", h );
+           
+            // Define our scales.
+            // We will set the range once we have loaded the data. 
+            var xScale0 = d3.scaleBand()
+                            .rangeRound([0, w])
+                            .paddingInner(0.1);
+
+            var xScale1 = d3.scaleBand()
+                .padding(0.05);
+
+            var yScale = d3.scaleLinear() 
+                .rangeRound([h, 0]);
+
+            var zScale = d3.scaleOrdinal();
+            
+            
+            // Define x-axis
+            var xAxis = d3.axisBottom()
+                          .scale(fxScale);
+                 
+            // Define y-axis
+            var yAxis = d3.axisLeft()
+                          .scale(fyScale);
+                          
+            //Append x-axis   
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + h + ")")
+              .call(xAxis);
+
+            //Append y-axis
+            svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis); 
+              
+            // We create a global variable for our data. 
+            var cur;
+            // Plotted against x-axis
+            var x = 'Metascore'
+            // The splitter field
+            var z = 'Bechdel'
+            var y = 'P';
+            
+           
+            
+            // Function - Calls api. Returns json data.
+            var get_data = function(x, z, y) {
+            
+                var arr = {'x': x, 'z':z, 'y': y};
+                
+                $.ajax({
+                    url: 'http://localhost:8000/bechdel_bar',
+                    type: 'POST',
+                    data: JSON.stringify(arr),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    async: false,
+                    success: function(json) {
+                        data = jQuery.parseJSON(json);
+                    }
+                });
+             
+                return data;
+                
+            };
+            
+             var make_grouped_bar = function(data) {
+                
+                // Get keys of data which are distinct values of z
+                var keys =  d3.keys(data[0]).filter(function(d) {return d !== 'Banding'; });
+               
+                //Define the domains of our scales
+                xScale0.domain(data.map(function(d) { return d['Banding']; }));
+
+                xScale1.domain(keys).rangeRound([0, xScale0.bandwidth()]);
+
+                yScale.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+                
+                //zScale = d3.scaleLinear()
+                //                 .domain([0, keys.length])
+                           //.range(colorbrewer.Set1[keys.length]);
+                           
+                           
+                           
+                zScale.range(['green', 'red']);
+                                        
+                // Reset the axis
+                var format_axis_label = function() {
+                    var rotate;
+                    var anchor;
+                    var dx;
+                    var dy;
+                    var tick_overlap = ( w / data.length ) - (d3.max(data, function(d) {return d['Banding'].length; })*5) 
+                    if ( tick_overlap < 6 ) {
+                        var rotate = "rotate(-20)"
+                        var anchor = "end";
+                        var dx = "-.3em";
+                        var dy = ".15em";
+                    } else {
+                        var rotate = "rotate(0)"
+                        var anchor = "middle";
+                        var dy = '1em';
+                        var dx = '0em'
+                    };
+                    return {'rotation':rotate, 'anchor':anchor, 'dx':dx, 'dy':dy}
+                };
+                
+                var axis_format = format_axis_label();
+                
+                yAxis.scale(yScale)
+                     .ticks(5);
+                
+                xAxis.scale(xScale0)
+                     .ticks(5);
+                
+                svg.select('.y.axis')
+                    .transition()
+                    .duration(dur)
+                    .call(yAxis);                
+
+                svg.select(".x.axis")
+                    .transition()
+                    .duration(dur)
+                    .call(xAxis)
+                    .selectAll('text')
+                        .style("text-anchor", axis_format['anchor'])
+                        .attr("dx", axis_format['dx'])
+                        .attr("dy", axis_format['dy'])
+                        .attr("transform", function(d) {
+                            return axis_format['rotation']
+                            });
+                    
+                // Create our grouping for our bars
+                var band = svg.append("g")
+                              .selectAll("g")
+                              .data(data)
+                              .enter().append("g")
+                              .attr("transform", function(d) { return "translate(" + xScale0(d['Banding']) + ",0)"; })
+                
+                // Append rect to our svg
+                band.selectAll("rect")
+                    .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+                    .enter()
+                    .append("rect")
+                      .attr('id', function(d) { return d.key; })
+                      .attr("x", function(d) { return xScale1(d.key); })
+                      .attr("y", h)
+                      .attr("width", xScale1.bandwidth())
+                      .attr("height", 0)
+                      .attr("fill", function(d, i) { return zScale(i); })
+                      .attr('fill-opacity', 0.75);
+                      
+                band.selectAll("rect")
+                    .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+                    .transition()
+                    .duration(dur)
+                    .attr("y", function(d) { return yScale(d.value); })
+                    .attr("height", function(d) { return h - yScale(d.value ); })
+                    
+                // Append y-label
+                svg.append("text")
+                   .attr('class', 'y label')
+                   .attr("transform", "rotate(-90)")
+                   .attr("y", 0 - margin.left)
+                   .attr("x",0 - h / 2)
+                   .attr("dy", "1em")
+                   .style("text-anchor", "middle")
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "14px")
+                   .attr("fill", "white")
+                   .text('Total')
+                   .transition()
+                   .duration(2500)
+                   .attr('fill', 'grey')
+                   
+                // Append x-label
+                svg.append('text')
+                   .attr('class', 'x label')
+                   .attr('x', w/2)
+                   .attr('y', h + margin.bottom)
+                   .style('text-anchor', 'middle')
+                   .attr("font-family", "sans-serif")
+                   .attr("font-size", "14px")
+                   .attr("fill", "white")
+                   .text(x)
+                   .transition()
+                   .duration(dur)
+                   .attr('fill', 'grey');
+
+            var toggle_opacity = function(opacity) {
+                if (opacity == 0) {
+                    return 0.75
+                } else {
+                    return 0
+                }
+            };
+
+            var toggle_data = function(result) {
+                 band.selectAll("rect")
+                    .transition()
+                    .duration(dur)
+                    .attr("fill-opacity", function(d) {
+                         // Why does one of my rects have a value of undefined?
+                        if ( d3.select(this).attr('id') == result ) {
+                            return toggle_opacity(d3.select(this).attr('fill-opacity'));
+                        } else {
+                            return d3.select(this).attr('fill-opacity');
+                        }
+                    })
+            };  
+                
+            var remove_data= function() {
+
+                yAxis.scale(fyScale);
+                xAxis.scale(fxScale); 
+
+                svg.select(".y.axis")
+                   .transition()
+                   .duration(dur)
+                   .call(yAxis);
+                   
+                svg.select(".x.axis")
+                   .transition()
+                   .duration(dur)
+                   .call(xAxis);
+                   
+                svg.selectAll('.label')
+                   .transition()
+                   .duration(dur)
+                   .attr('fill', 'white')
+                   .remove
+                                   
+                band.selectAll("rect")
+                       .transition()
+                       .duration(dur)
+                       .attr("y", h)
+                       .attr("height", 0)
+                       .attr("fill-opacity", 0)
+                       .remove()
+                       
+            };
+            
+            d3.selectAll("button.col_button")
+                  .on("click", function() {
+                      var axis = d3.select(this).attr("axis");
+                      if (axis == 'y') {
+                        y = d3.select(this).attr("id");
+                      } else {
+                        x = d3.select(this).attr("id");
+                      }
+                      
+                      remove_data()
+                      cur = get_data(x, z, y);
+                      console.log(cur);
+                      setTimeout(function(){
+                         make_grouped_bar(cur);
+                      }, dur);
+                  });                  
+                  
+                   
+            d3.selectAll("button.bechdel_button")
+              .on("click", function() {
+                 
+                var result = d3.select(this).attr('id'); 
+                    toggle_data(result);
+                    
+                });
+                
+                        
+            d3.selectAll("button.bechdel_button_toggle")
+              .on("click", function() {
+                 
+                var result = d3.select(this).attr('id'); 
+                    toggle_data(result);
+                
+            });            
+           
+               
+                var toggle_opacity = function(opacity) {
+                    if (opacity == 0) {
+                        return 0.75
+                    } else {
+                        return 0
+                }
+            };        
+
+              var toggle_data = function(result) {
+                 band.selectAll("rect")
+                    .transition()
+                    .duration(1000)
+                    .attr("fill-opacity", function(d) {
+                        if ('toggle' == result) {
+                            console.log('toggle')
+                        } else if ( d3.select(this).attr('z') == result) {
+                            return toggle_opacity(d3.select(this).attr('fill-opacity'));
+                            console.log(d3.select(this).attr('z') );
+                        } else {
+                            return d3.select(this).attr('fill-opacity');
+                        }
+                    })
+                };     
+            };     
+
+            cur = get_data(x, z, y);
+            make_grouped_bar(cur);                 
+                      
+                    
+                     
+</script>	
+</body>
+</html>
