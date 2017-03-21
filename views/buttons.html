@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>The Bechdel Test</title>
+        <link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Raleway|Roboto|Lora|Open+Sans+Condensed:300" rel="stylesheet">
+		<script type="text/javascript" src="../d3/d3.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/get_data.js"></script>
+        <link rel="stylesheet" href="bechdel.css">
+   	</head>
+    
+    <body>
+                   
+        <a class="Title">Bechdel Analysis</a>
+        
+        <p class="Intro"> 
+            <a class="wiki" href="https://en.wikipedia.org/wiki/Bechdel_test" target="_blank" style="text-decoration:none">
+                 The Bechdel test </a> 
+                 asks whether a work of fiction features at least two named female characters who have a conversation about something other than men. </br>
+                 Here, we explore the relationship between the Bechdel test and film.      
+        </p>
+        <div class="graphs">
+            <p class="button_key">GRAPHS</p>
+            <div class="graph_buttons">
+            </div>
+        </div>
+        <div class="cols">
+            <p class="button_key">COLUMNS</p>
+            <div class="Z" >
+                <p class="label">Z</p>
+            </div>
+            <div class="X" >
+                <p class="label">X</p>
+            </div>
+            <div class="Y" >
+                <p class="label">Y</p>
+            </div>
+        </div>
+
+
+    <script>
+
+
+    var scatter_cols = ['Gross', 'Budget', 'imdbRating'];
+    var bar_cols =  ['Gross', 'Budget', 'imdbRating', 'Certificate'];
+    var y_cols = ['Percentage', 'Total'];
+    var z_cols = [1,0];
+    make_graph_buttons();
+    make_col_buttons(scatter_cols, 'X');
+    make_col_buttons(scatter_cols, 'Y');
+    make_z_buttons(z_cols);
+
+    //$("body").append("<button class='test1_button'>").on("click", function() { if ( $('.axis_buttons').not(':animated')) {switch_col_buttons()} });
+
+
+    function make_graph_buttons () {
+
+        var r1  = $(' <button class="graph_button unclicked" axis="i" id="bar">Bar</button>');
+        var r2  = $(' <button class="graph_button unclicked" axis="i" id="scatter">Scatter</button>');
+        $(  ".graph_buttons" ).append( r1 ).hide();
+        $(  ".graph_buttons" ).append( r2 ).hide();
+        $(  "#scatter").on('click', function () {switch_col_buttons('scatter')});
+        $(  "#bar").on('click', function () {switch_col_buttons('bar')});
+        setTimeout(function() {
+             $(".graph_buttons").fadeIn(2000);
+        },   1000);
+    };
+
+
+    function make_z_buttons (data) {
+
+        var d = $('<div class="z_buttons">');
+        $(".Z").append( d );
+
+        $.each(data, function (d, i) {
+            var r  = $('<button class="z_button fail_button unclicked" axis="Z" id='+i+'>'+i+'</button>');
+                $(  ".Z .z_buttons" ).append( r ).hide();
+            });
+        $( ".Z .z_buttons" ).append( ' <button class="clr_button button unclicked" id="toggle">Toggle</button>' ).hide();
+        setTimeout(function() {
+             $(".Z .z_buttons").fadeIn(2000);
+        },   1000);
+    };
+
+    function make_col_buttons (data, axis) {
+        var d = $('<div class="axis_buttons">');
+        $("."+axis).append( d );
+
+        $.each(data, function (d, i) {
+            var r = $('<button class="col_button unclicked" axis="'+axis+'" id="'+i+'"> '+i+'</button>');
+            $("."+axis+" .axis_buttons"  ).append( r ).hide();
+            $("#"+i).on('click', function() { log(axis+" "+i); });
+        });
+
+        setTimeout(function() {
+             $("."+axis+" .axis_buttons").fadeIn(2000);
+        },   1000);
+    };
+
+    function switch_col_buttons (graph) {
+
+        $('.axis_buttons').fadeOut(2000, function() { $(this).remove(); });
+
+        if ( graph == 'bar' ) {
+            var y = y_cols;
+            var x = bar_cols;
+        } else {
+            var y = scatter_cols;
+            var x = scatter_cols;
+        };
+
+        setTimeout(function() {
+             make_col_buttons(x, 'X');
+             make_col_buttons(y, 'Y');
+        },   2000);
+    };
+
+
+
+
+
+    function log (p) {
+
+        console.log('ta dah:' + p);
+    };
+    
+
+        
+
+        
+
+    
+</script>
+ 
+</body>
+</html>
