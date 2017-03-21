@@ -6,148 +6,11 @@
         <link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Raleway|Roboto|Lora|Open+Sans+Condensed:300" rel="stylesheet">
 		<script type="text/javascript" src="../d3/d3.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <style type="text/css">
-            
-            .Title {
-                font-size: 40px;
-                font-family: 'Josefin Sans', sans-serif;
-                line-height: 11px;
-                color: Grey;
-                position:absolute; 
-                top: 55px;
-                left: 55px;
-            }
-        
-            .Intro {
-                font-size: 15px;
-                font-family: 'Open Sans Condensed', sans-serif;
-                line-height: 20px;
-                color: Grey;
-                position:absolute; 
-                top: 45px;
-                left: 355px;
-            }	
-
-            .who{
-              margin-left:6px;
-              font-size: 11px;
-            }
-            
-            .wiki:hover{
-                color: grey;
-                font-weight:bold;
-                margin-left: 6px;
-            }
-            
-            div.links{
-              color: grey;
-              position:absolute;
-              bottom: 15px;
-              left: 55px;
-              font-family:'Lora', serif;
-              font-size: 12px;
-            }
-            .nl {
-                text-decoration:none;
-            }
+		<script type="text/javascript" src="../js/get_data.js"></script>
+        <link rel="stylesheet" href="bechdel.css">
             
             
-            div.graphs{
-              position:absolute; 
-              top: 130px;
-              left: 75px;
-            }            
-            
-            div.cols{
-              position:absolute;
-              top: 250px;
-              left: 75px;
-            }
-
-            div.graph_buttons{
-              position: absolute;
-              top: 50px;
-            }
-            
-            div.axis_buttons{
-              position:absolute; 
-              top: 50px;
-            }
-            
-            div.X {
-              position:absolute;
-              left: 80px;            
-            }
-            
-            div.Y {
-              position:absolute;
-              left: 160px;            
-            }
-            
-            div.Z {
-              position:absolute;
-            }    
-
-            p.button_key{
-              font-size: 11px;
-              color: black;              
-              font-family: 'Raleway', sans-serif;
-              width:150px;
-              padding-bottom: 4px;
-              border-bottom: 1px solid grey; 
-              text-decoration: none;            
-            }
-            
-            p.label{
-              position:absolute;
-              left: 37px;
-              font-size: 14px;
-              font-family: 'Raleway', sans-serif;
-            }            
-            button {
-              color: grey;
-              border-radius: 5px;
-              background-color: white;
-              font-family:'Raleway', sans-serif;
-              font-size: 9px;
-              width: 79px;
-              padding: 3px;
-            }
-            button.pass_button{
-               color: green;
-            }
-            button.fail_button{
-               color: red;
-            }
-            button:focus {
-                outline:0;
-            }
-            .unclicked{
-              border: 1.5px solid white;
-              -webkit-transition-duration: 0.4s; /* Safari */
-              transition-duration: 0.4s;            
-            }
-            .unclicked:hover {
-              border: 1.5px solid;
-            }
-            .clicked{
-              border: 1.5px solid;
-            }  
-
-            .axis line{
-              stroke: grey;
-            }
-
-            .axis path{
-              stroke: grey;
-            }
-
-            .axis text{
-              fill: grey;
-            }              
-            
-        </style>
-	</head>
+   	</head>
 	<body>
       
         <a class="Title">Bechdel Analysis</a>
@@ -161,8 +24,8 @@
         <div class="graphs">
             <p class="button_key">GRAPHS</p>
             <div class="graph_buttons">
-                <button class="graph_buttons unclicked" axis="i" id="bar">Bar</button>
-                <button class="graph_buttons unclicked" axis="i" id="scatter">Scatter</button>
+                <button class="graph_button unclicked" axis="i" id="bar">Bar</button>
+                <button class="graph_button unclicked" axis="i" id="scatter">Scatter</button>
             </div>
         </div>        
         <div class="cols">
@@ -170,31 +33,31 @@
             <div class="Z" >
                 <p class="label">Z</p>
                 <div class="axis_buttons">
-                  <button class="pass_button unclicked" axis="z" id=1>Passed</button>
-                  <button class="fail_button unclicked" axis="z" id=0>Failed</button>
-                  <button class="button unclicked" id="toggle">Toggle</button>
+                  <button class="clr_button pass_button unclicked" axis="z" id=1>Passed</button>
+                  <button class="clr_button fail_button unclicked" axis="z" id=0>Failed</button>
+                  <button class="clr_button button unclicked" id="toggle">Toggle</button>
                 </div>
             </div>       
             <div class="X" >
                 <p class="label">X</p>
                 <div class="axis_buttons">
-                  <button class="x_button unclicked" axis="x" id="Gross"> Gross</button>
-                  <button class="x_button unclicked" axis="x" id="Budget">Budget</button>
-                  <button class="x_button unclicked" axis="x" id="imdbRating">IMDB</button>
-                  <button class="x_button unclicked" axis="x" id="Metascore">Meta</button>
-                  <button class="x_button unclicked" axis="x" id="AwardScore">Awards</button>
-                  <button class="x_button unclicked" axis="x" id="Year">Year</button>
+                  <button class="col_button unclicked" axis="x" id="Gross"> Gross</button>
+                  <button class="col_button unclicked" axis="x" id="Budget">Budget</button>
+                  <button class="col_button unclicked" axis="x" id="imdbRating">IMDB</button>
+                  <button class="col_button unclicked" axis="x" id="Metascore">Meta</button>
+                  <button class="col_button unclicked" axis="x" id="AwardScore">Awards</button>
+                  <button class="col_button unclicked" axis="x" id="Year">Year</button>
                 </div>
             </div>  
             <div class="Y" >
                 <p class="label">Y</p>
                 <div class="axis_buttons">
-                  <button class="y_button unclicked" axis="y" id="Gross"> Gross</button>
-                  <button class="y_button unclicked" axis="y" id="Budget">Budget</button>
-                  <button class="y_button unclicked" axis="y" id="imdbRating">IMDB</button>
-                  <button class="y_button unclicked" axis="y" id="Metascore">Meta</button>
-                  <button class="y_button unclicked" axis="y" id="AwardScore">Awards</button>
-                  <button class="y_button unclicked" axis="y" id="Year">Year</button>
+                  <button class="col_button unclicked" axis="y" id="Gross"> Gross</button>
+                  <button class="col_button unclicked" axis="y" id="Budget">Budget</button>
+                  <button class="col_button unclicked" axis="y" id="imdbRating">IMDB</button>
+                  <button class="col_button unclicked" axis="y" id="Metascore">Meta</button>
+                  <button class="col_button unclicked" axis="y" id="AwardScore">Awards</button>
+                  <button class="col_button unclicked" axis="y" id="Year">Year</button>
                 </div>
             </div>   
         </div>
@@ -219,35 +82,133 @@
         </div>
         
         <script>
-
-            $('button').click(function () {
-                
-                if ( $(this).attr("axis") == 'x') {
-                    $("button[axis='x']").removeClass("clicked").addClass("unclicked");
-                    $(this).removeClass('unclicked').addClass("clicked");
-                } else if ( $(this).attr("axis") == 'y') {
-                    $("button[axis='y']").removeClass("clicked").addClass("unclicked");
-                    $(this).removeClass('unclicked').addClass("clicked");
-                } else if ( $(this).attr('axis') == 'z') {
-                    $(this).toggleClass("clicked");
-                } else if ( $(this).attr('axis') == 'i') {
-                    $("button[axis='i']").removeClass("clicked").addClass("unclicked");
-                    $(this).removeClass('unclicked').addClass("clicked");
-                } else if ( $(this).attr('id') == 'toggle' ) {
-                    $("button[axis='z']").toggleClass("clicked");
-                };
-                
-            });
             
+            /**********
+            *
+            *   BUTTON FUNCTIONS
+            *
+            **********/
+            
+            // function for GRAPH buttons
+            d3.selectAll("button.graph_button")
+                .on("click", function() {
+                    
+                    // remove bars/circles
+                    remove_data(graph)
+                    
+                    // set graph
+                    graph = d3.select(this).attr("id");
+                    
+                    // create graph
+                    if ( graph == 'bar' ) {
+                        var arr = {'x': x, 'z':'Bechdel', 'y': 'T'};
+                        bar_data = get_data(graph, arr);
+                        make_grouped_bar(bar_data, x);
+                    } else {
+                        var arr = {'x': x, 'y': y, 'z':'Bechdel', 'r':'imdbRating', 't':'Title'};
+                        scatter_data = get_data(graph, arr);
+                        make_scatter(scatter_data, x, y, 'imdbRating','Bechdel','Title');
+                    };
+                    
+                    // button effects
+                    $("button[axis='i']").removeClass("clicked").addClass("unclicked");
+                    $("button[id='"+graph+"']").addClass("clicked");
+                    
+                   });
+             
+             // function for COLUMN buttons
+             d3.selectAll("button.col_button")
+                .on("click", function() {
+                    
+                    // get axis of clicked button
+                    var axis = d3.select(this).attr("axis");
+
+                    // remove bars/circles
+                    remove_data(graph)
+                    
+                    // get new data and create graph
+                    if ( graph == 'bar' ) {
+                    
+                        // set x
+                        x = d3.select(this).attr("id");
+                        
+                        // get new data
+                        arr =  {'x': x, 'z':'Bechdel', 'y': 'T'};
+                        bar_data = get_data(graph, arr);
+                        
+                        // Create the grouped bar graph. 
+                        // Delayed to allow for fetching data.
+                        // ### change
+                        setTimeout(function(){
+                            make_grouped_bar(bar_data, x);
+                        }, dur);
+                        
+                    } else {
+                    
+                        // get axis and col of clicked button
+                        var col = d3.select(this).attr("id");
+                        var axis = d3.select(this).attr("axis");
+                        
+                        // set x or y
+                        if (axis == 'x') {
+                            x = col;
+                        } else {
+                            y = col;
+                        };  
+                        
+                        console.log(x);
+                        console.log(y);
+                        // get new data
+                        arr = {'x': x, 'y': y, 'z': z, 'r': r, 't':t};
+                        scatter_data = get_data(graph, arr);
+                        
+                        // create scatter graph
+                        setTimeout(function(){
+                            make_scatter(scatter_data, x, y, r, z, t);
+                      },dur);
+                    };
+                    
+                    // apply button effects
+                    $("button[axis='"+axis+"']").removeClass("clicked").addClass("unclicked");
+                    $(this).addClass("clicked");
+                    
+                });
+                   
+            // function for Z-SCALE COLOUR buttons
+            d3.selectAll("button.clr_button")
+                .on("click", function() {
+                
+                    var button_id = $(this).attr('id');
+                    
+                    // update colours on z scale
+                    update_z_colors(button_id);
+                    
+                    // apply button effects
+                    if ( $(this).attr('id') == 'toggle' ) {
+                        $("button[axis='z']").toggleClass("clicked");
+                    } else {
+                        $(this).toggleClass("clicked");
+                    }
+                });
+                  
         </script>
         
         <script>
-        
+            
             // Set margins, height and width for our svg element.
-            var margin = {top: 40, right: 120, bottom: 70, left: 120};
-            var w = 1000 - margin.left - margin.right;
+            var margin = {top: 40, right: 70, bottom: 70, left: 70};
+            var w = 800 - margin.left - margin.right;
             var h = 450 - margin.top - margin.bottom;
-            var r = 2;
+            var dur = 2500
+            
+            var graph = 'bar';
+            var x = 'Metascore';
+            var y = 'imdbRating';
+            var z = 'Bechdel';
+            var r = 'imdbRating';
+            var t = 'Title';
+            
+
             var fyScale = d3.scaleBand().range([h,0]);
             var fxScale = d3.scaleBand().range([0,w]);            
             
@@ -260,18 +221,8 @@
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             
             // Position the svg
-            $("svg").css({top: 155, left: 305, position:'absolute'});
+            $("svg").css({top: 155, left: 355, position:'absolute'});
             
-                        // Define our scales.
-            // We will set the range once we have loaded the data. 
-            var xScale = d3.scaleLinear()
-                           .range([0, w]);
-                                    
-            var yScale = d3.scaleLinear()
-                           .range([h, 0]);
-                           
-            var rScale = d3.scaleLinear()
-                           .range([0.1, r]);
                                
             // Define x-axis
             var xAxis = d3.axisBottom()
@@ -283,14 +234,14 @@
             
             //Append x-axis   
             svg.append("g")
-                .attr("class", "axis")
+                .attr("class", "x axis")
                 .attr("transform", "translate(0," + h  + ")")
                 .call(xAxis);
 
             
             //Append y-axis
             svg.append("g")
-                .attr("class", "axis")
+                .attr("class", "y axis")
                 .attr("transform", "translate(0,0)")
                 .call(yAxis)
                 .selectAll("text")	
@@ -299,10 +250,318 @@
                 .attr("dy", ".15em")
                 .attr("transform", function(d) {
                        return "rotate(0)" 
-            }); 
+                }); 
+                
+            var make_grouped_bar = function(data, x) {
+                
+                // Get keys of data which are distinct values of z
+                var keys =  d3.keys(data[0]).filter(function(d) {return d !== 'Banding'; });
+                
+                // Define our scales.
+                // We will set the range once we have loaded the data. 
+                var xScale0 = d3.scaleBand()
+                                .rangeRound([0, w])
+                                .paddingInner(0.1);
+
+                var xScale1 = d3.scaleBand()
+                    .padding(0.05);
+
+                var yScale = d3.scaleLinear() 
+                    .rangeRound([h, 0]);
+
+                var zScale = d3.scaleOrdinal();
+               
+                //Define the domains of our scales
+                xScale0.domain(data.map(function(d) { return d['Banding']; }));
+
+                xScale1.domain(keys).rangeRound([0, xScale0.bandwidth()]);
+
+                yScale.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+                           
+                zScale.range(['red', 'green']);
+                
+                // update axes
+                update_axes(xScale0, yScale);
+                    
+                // Create our grouping for our bars
+                var band = svg.append("g")
+                              .selectAll("g")
+                              .data(data)
+                              .enter().append("g")
+                              .attr("transform", function(d) { return "translate(" + xScale0(d['Banding']) + ",0)"; })
+                
+                // Append rect to our svg
+                band.selectAll("rect")
+                    .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+                    .enter()
+                    .append("rect")
+                      .attr('id', function(d) { return d.key; })
+                      .attr("x", function(d) { return xScale1(d.key); })
+                      .attr("y", h)
+                      .attr("width", xScale1.bandwidth())
+                      .attr("height", 0)
+                      .attr("fill", function(d, i) { return zScale(i); })
+                      .attr('fill-opacity', 0.75);
+                      
+                band.selectAll("rect")
+                    .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+                    .transition()
+                    .duration(dur)
+                    .attr("y", function(d) { return yScale(d.value); })
+                    .attr("height", function(d) { return h - yScale(d.value ); })
+                    
+                };               
+                
+                function make_scatter(data, x, y, r, z, t) {
+                                    
+                    // Define our scales.
+                    // We will set the range once we have loaded the data. 
+                    var xScale = d3.scaleLinear()
+                                   .range([0, w]);
+                                            
+                    var yScale = d3.scaleLinear()
+                                   .range([h, 0]);
+                                   
+                    var rScale = d3.scaleLinear()
+                                   .range([0.1, 2]);
+                                   
+                                                
+                    //Define the domains of our scales
+                    xScale.domain([0, d3.max(data, function(d) {return d[x]; })]);
+                    
+                    yScale.domain([0, d3.max(data, function(d) {return d[y]; })]);
+                                        
+                    // update axes
+                    update_axes(xScale, yScale);
+                   
+                    // Append points to our svg
+                    svg.append('g')
+                       .attr('clip-path', 'url(#chart-area)')
+                       .selectAll("circle")
+                       .data(data)
+                       .enter()
+                       .append("circle")
+                       .attr("cx", w/2)
+                       .attr("cy", h/2)
+                       .attr("r", 4)
+                       .attr('id', function(d) {
+                           return d[z];
+                       })
+                       .attr('title', function(d) {
+                           return d[t];
+                       })               
+                       .attr("fill-opacity", 0)
+                       .attr("fill", "white")
+                       .on('mouseover', function(d) {
+                       
+                          var xPosition = parseFloat(d3.select(this).attr("cx")) + 7;
+                          var yPosition = parseFloat(d3.select(this).attr("cy")) - 7;
+                          
+                           svg.append('text')
+                              .attr('id', 'tooltip')
+                              .attr('x', xPosition)
+                              .attr('y', yPosition)
+                              .attr("text-anchor", "left")
+                              .attr("font-family", "sans-serif")
+                              .attr("font-size", "11px")
+                              .attr("fill", "black")
+                              .text(d[t]);
+                        })
+                        .on("mouseout", function() {
+
+                            //Remove the tooltip
+                            d3.select("#tooltip").remove();
+
+                        })
+                       
+                    svg.selectAll('circle')
+                       .transition()
+                       .duration(dur)
+                       .attr("cx", function(d) {
+                           return xScale(d[x]);
+                       })
+                       .attr("cy", function(d) {
+                           return yScale(d[y]);
+                       })
+                       .attr("r",function(d) {
+                           return 3;
+                       })
+                       .attr("fill-opacity", 0.75)
+                       .attr("fill", function(d){
+                           if (d[z] == 0) {
+                               return 'red';
+                          } else {
+                               return 'green';
+                          }
+                       });
+                           
+                };
+                
+                
+                function update_axes(xScale, yScale) {
+                
+                    // Reset the axis
+                    var format_axis_label = function() {
+
+                        // set default attributes
+                        var rotate = "rotate(0)";
+                        var anchor = "middle";
+                        var dx = '0em';
+                        var dy = '1em';
+                        
+                        // if graph is 'bar'
+                        //    and axis label length > bandwidth
+                        // then overwrite default parameters
+                        if ( graph == 'bar' ) {
+                            if ( ( w / data.length ) - (d3.max(data, function(d) {return d['Banding'].length; })*5) < 6 ) {
+                                rotate = "rotate(-20)"
+                                anchor = "end";
+                                dx = "-.3em";
+                                dy = ".15em";
+                                console.log(rotate);
+                            }
+                        };
+                        console.log(rotate);
+                        
+                        return {'rotation':rotate, 'anchor':anchor, 'dx':dx, 'dy':dy}
+                        
+                    };
+                
+                    var axis_format = format_axis_label();
+                    
+                    yAxis.scale(yScale)
+                         .ticks(5);
+                    
+                    xAxis.scale(xScale)
+                         .ticks(5);
+                    
+                    svg.select('.y.axis')
+                        .transition()
+                        .duration(dur)
+                        .call(yAxis);                
+
+                    svg.select(".x.axis")
+                        .transition()
+                        .duration(dur)
+                        .call(xAxis)
+                        .selectAll('text')
+                            .style("text-anchor", axis_format['anchor'])
+                            .attr("dx", axis_format['dx'])
+                            .attr("dy", axis_format['dy'])
+                            .attr("transform", function(d) {
+                                return axis_format['rotation']
+                                });
+                                
+                    // Append x axis label
+                    svg.append("text")
+                       .attr('class', 'label')
+                       .attr("transform", "rotate(-90)")
+                       .attr("y", 0 - margin.left)
+                       .attr("x",0 - h / 2)
+                       .attr("dy", "1em")
+                       .style("text-anchor", "middle")
+                       .attr("font-family", "sans-serif")
+                       .attr("font-size", "14px")
+                       .attr("fill", "white")
+                       .text(y)
+                       .transition()
+                       .duration(2500)
+                       .attr('fill', 'grey')
+                       
+                    // Append y axis label
+                    svg.append('text')
+                       .attr('class', 'label')
+                       .attr('x', w/2)
+                       .attr('y', h + margin.bottom)
+                       .style('text-anchor', 'middle')
+                       .attr("font-family", "sans-serif")
+                       .attr("font-size", "14px")
+                       .attr("fill", "white")
+                       .text(x)
+                       .transition()
+                       .duration(dur)
+                       .attr('fill', 'grey');
+                                
+                };   
+
+                function update_z_colors(button_id) {
+                
+                    // function which toggles opacity
+                    var toggle_opacity = function(opacity) {
+                        if (opacity == 0) {
+                            return 0.75
+                        } else {
+                            return 0
+                        }
+                    };                      
+                    
+                    // set element - circle or rect
+                    var element;
+                    if ( graph == 'bar' ) {
+                        element = 'rect';
+                    } else {
+                        element = 'circle';
+                    };
+                    
+                    console.log(element);
+                    // toggle opacity
+                    svg.selectAll(element)
+                        .transition()
+                        .duration(1000)
+                        .attr("fill-opacity", function(d) {
+                            if (button_id == 'toggle') {
+                                return toggle_opacity(d3.select(this).attr('fill-opacity'));
+                            } else if ( button_id == d3.select(this).attr('id')) {
+                                return toggle_opacity(d3.select(this).attr('fill-opacity'));
+                            } else {
+                                return d3.select(this).attr('fill-opacity');
+                            }
+                        });
+                };
+                   
+                function remove_data(graph) {
+
+                    yAxis.scale(fyScale);
+                    xAxis.scale(fxScale); 
+
+                    svg.select(".y.axis")
+                       .transition()
+                       .duration(dur)
+                       .call(yAxis);
+                       
+                    svg.select(".x.axis")
+                       .transition()
+                       .duration(dur)
+                       .call(xAxis);
+                       
+                    svg.selectAll('.label')
+                       .transition()
+                       .duration(dur)
+                       .attr('fill', 'white')
+                       .remove();
+                    
+                    if ( graph == 'bar' ) {                          
+                        svg.selectAll("rect")
+                           .transition()
+                           .duration(dur)
+                           .attr("y", h)
+                           .attr("height", 0)
+                           .attr("fill-opacity", 0)
+                           .remove()
+                    } else {
+                        svg.selectAll("circle")
+                           .transition()
+                           .duration(2500)
+                           .attr("cx", w/2)
+                           .attr("cy", h/2)
+                           .attr("r", 4)
+                           .attr("fill", 'white')
+                           .remove()
+                    };
+  
+                };
         
         </script>
-           
-</script>	
+        
 </body>
 </html>

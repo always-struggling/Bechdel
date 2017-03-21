@@ -89,9 +89,7 @@ class Analyse(object):
         mx = tmp_df[x].max()
         if type == 'number' and nunq > 25:
             banding, labels = bands.get_banding(mn, mx)
-            print (banding, labels)
             tmp_df['Banding'] = pandas.cut(tmp_df[x], bins=banding, labels=False)
-            print(tmp_df)
             tmp_df = tmp_df.replace({"Banding": labels})
         else:
             tmp_df['Banding'] = tmp_df[x]
@@ -128,7 +126,7 @@ class Analyse(object):
 
 if __name__=='__main__':
     data = Analyse('data\\bechdel_data.json')
-    blah = data.get_bar_json('Gross','Bechdel', 'P')
+    blah = data.get_bar_json('Gross','Bechdel', 'T')
     #blah = data.get_scatter_json('Rated', 'imdbRating','imdbRating', 'Metascore')
     print(blah)
 
