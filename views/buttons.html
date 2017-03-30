@@ -8,131 +8,167 @@
 		<script type="text/javascript" src="../d3/d3.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<script type="text/javascript" src="../js/get_data.js"></script>
-        <link rel="stylesheet" href="bechdel.css">
+        <link rel="stylesheet" href="bechdel_title.css">
    	</head>
     
     <body>
-                   
-        <a class="Title">Bechdel Analysis</a>
+    
+        <div class="main_title"></div>      
         
-        <p class="Intro"> 
-            <a class="wiki" href="https://en.wikipedia.org/wiki/Bechdel_test" target="_blank" style="text-decoration:none">
-                 The Bechdel test </a> 
-                 asks whether a work of fiction features at least two named female characters who have a conversation about something other than men. </br>
-                 Here, we explore the relationship between the Bechdel test and film.      
-        </p>
-        <div class="graphs">
-            <p class="button_key">GRAPHS</p>
+        <div class="graphs starthidden">
+            <p class="label">GRAPHS</p>
             <div class="graph_buttons">
             </div>
         </div>
-        <div class="cols">
-            <p class="button_key">COLUMNS</p>
+        
+        <div class="fields starthidden">
+            <p class="label">FIELDS</p>
             <div class="Z" >
-                <p class="label">Z</p>
+                <p class="field_label">Z</p>
             </div>
             <div class="X" >
-                <p class="label">X</p>
+                <p class="field_label">X</p>
             </div>
             <div class="Y" >
-                <p class="label">Y</p>
+                <p class="field_label">Y</p>
             </div>
         </div>
+        
+        <script>
+        
+            // Global variables
+            var s_fields = ['Gross', 'Budget'];
+            var bx_fields = ['Gross', 'Budget', 'Certificate'];
+            var by_fields = ['Total', 'Percentage'];
+            
+            make_graph_button('Bar');
+            make_graph_button('Scatter');
+            make_title('Testing Buttons');
+        
+            // Function - Creates our title
+            function make_title(P_title) {
+            
+                var r = $('<a class="title info">'+P_title+'</a>');
+                
+                $(  ".main_title" ).append( r ).hide();            
+                
+            }
+       
+            // Function - Creates our Graph Buttons
+            function make_graph_button (P_graph) {
+            
+                // Define new element
+                var r = $(' <button class="graph_button" axis="i" id="'+P_graph+'">'+P_graph+'</button>');
+                
+                // Bind click event to element
+                r.on('click', function () {
+                 
+                    // Set buttons as clicked
+                    $('.graph_button').removeClass('clicked');
+                    $(this).addClass('clicked');
+
+                    
+                    // Disable all buttons
+                    $('button').prop('disabled', true);
+                    setTimeout(function() {
+                        $('button').prop('disabled', false);
+                        $('#'+P_graph).prop('disabled', true);
+                    },   3000);
+                                        
+                    // Determine the fields to append
+                    if (P_graph == 'Bar') {
+                        var x_fields = bx_fields;
+                        var y_fields = by_fields;
+                    } else {
+                        var x_fields = s_fields;
+                        var y_fields = s_fields;                
+                    };
+                    
+                    // Switch field buttons
+                    remove_object('axis_buttons', function() {
+                        make_field_buttons(y_fields, 'Y');
+                        make_field_buttons(x_fields, 'X');
+                        show_object('axis_buttons');
+                    });
+                });
+                
+                // Append new element
+                $(  ".graph_buttons" ).append( r ).hide();
 
 
-    <script>
+            };
+            
+            // Function - Creates the field buttons for an axis
+            function make_field_buttons (P_fields, P_axis) {
+            
+                // Define new element - div that will hold our buttons
+                var r = $('<div class="axis_buttons">');
+                
+                // Bind click event to new element
+                $("."+P_axis).append( r )
+                
+                // Loop through our fields
+                $.each(P_fields, function(d, i) {
+                    
+                    // Define new button element
+                    var r = $('<button class="field_button" axis="'+P_axis+'" id="'+i+'"> '+i+' </button>');
+                    
+                    // Bind click event to new element
+                    r.on('click', function() { 
+                    
+                        // Disable buttons
+                        $('.field_button').prop('disabled', true);
+                        setTimeout(function() {
+                            $('.field_button').prop('disabled', false);
+                        },   3000);
+                        
+                        $("button[axis='"+P_axis+"']").removeClass("clicked");
+                        $(this).addClass("clicked");
+                        
+                    });
+                    
+                    // Append new element
+                    $("."+P_axis+" .axis_buttons"  )
+                        .append( r.prop('disabled', true) )
+                        .hide();
+                                                           
+                });
+                                
+            };
+            
+            // Fades in an object 
+            function show_object (P_object) {
+             
+                $("."+P_object).fadeIn(2000);
+            
+            };
+            
+            // Removes an object
+            function remove_object(P_object, callback) {
+                
+                if ($('.'+P_object).length) {
+                    $('.'+P_object).fadeOut(1000, function() { $(this).remove(); });
+                    setTimeout(function() {
+                        callback();   
+                    },   1000);  
+                } else {
+                    callback(); 
+                };
+            };
+                
+            // Start up
+            $(document).ready(function() {
+                show_object('main_title');
+                show_object('starthidden');
+                setTimeout(function() {
+                    show_object('graph_buttons');
+                },   2000); 
 
-
-    var scatter_cols = ['Gross', 'Budget', 'imdbRating'];
-    var bar_cols =  ['Gross', 'Budget', 'imdbRating', 'Certificate'];
-    var y_cols = ['Percentage', 'Total'];
-    var z_cols = [1,0];
-    make_graph_buttons();
-    make_col_buttons(scatter_cols, 'X');
-    make_col_buttons(scatter_cols, 'Y');
-    make_z_buttons(z_cols);
-
-    //$("body").append("<button class='test1_button'>").on("click", function() { if ( $('.axis_buttons').not(':animated')) {switch_col_buttons()} });
-
-
-    function make_graph_buttons () {
-
-        var r1  = $(' <button class="graph_button unclicked" axis="i" id="bar">Bar</button>');
-        var r2  = $(' <button class="graph_button unclicked" axis="i" id="scatter">Scatter</button>');
-        $(  ".graph_buttons" ).append( r1 ).hide();
-        $(  ".graph_buttons" ).append( r2 ).hide();
-        $(  "#scatter").on('click', function () {switch_col_buttons('scatter')});
-        $(  "#bar").on('click', function () {switch_col_buttons('bar')});
-        setTimeout(function() {
-             $(".graph_buttons").fadeIn(2000);
-        },   1000);
-    };
-
-
-    function make_z_buttons (data) {
-
-        var d = $('<div class="z_buttons">');
-        $(".Z").append( d );
-
-        $.each(data, function (d, i) {
-            var r  = $('<button class="z_button fail_button unclicked" axis="Z" id='+i+'>'+i+'</button>');
-                $(  ".Z .z_buttons" ).append( r ).hide();
             });
-        $( ".Z .z_buttons" ).append( ' <button class="clr_button button unclicked" id="toggle">Toggle</button>' ).hide();
-        setTimeout(function() {
-             $(".Z .z_buttons").fadeIn(2000);
-        },   1000);
-    };
-
-    function make_col_buttons (data, axis) {
-        var d = $('<div class="axis_buttons">');
-        $("."+axis).append( d );
-
-        $.each(data, function (d, i) {
-            var r = $('<button class="col_button unclicked" axis="'+axis+'" id="'+i+'"> '+i+'</button>');
-            $("."+axis+" .axis_buttons"  ).append( r ).hide();
-            $("#"+i).on('click', function() { log(axis+" "+i); });
-        });
-
-        setTimeout(function() {
-             $("."+axis+" .axis_buttons").fadeIn(2000);
-        },   1000);
-    };
-
-    function switch_col_buttons (graph) {
-
-        $('.axis_buttons').fadeOut(2000, function() { $(this).remove(); });
-
-        if ( graph == 'bar' ) {
-            var y = y_cols;
-            var x = bar_cols;
-        } else {
-            var y = scatter_cols;
-            var x = scatter_cols;
-        };
-
-        setTimeout(function() {
-             make_col_buttons(x, 'X');
-             make_col_buttons(y, 'Y');
-        },   2000);
-    };
-
-
-
-
-
-    function log (p) {
-
-        console.log('ta dah:' + p);
-    };
+                    
+        </script>
     
-
-        
-
-        
-
+    </body>
     
-</script>
- 
-</body>
+    
 </html>
