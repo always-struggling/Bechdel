@@ -4,7 +4,7 @@ import json
 class DB(object):
 
     def __init__(self):
-        self.conn = psycopg2.connect("dbname=Bechdel user=postgres password=oreflan@51")
+        self.conn = psycopg2.connect("dbname=Bechdel user=postgres password=")
         self.cur = self.conn.cursor()
 
     def insert_bechdel_info(self, row):
