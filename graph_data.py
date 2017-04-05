@@ -1,18 +1,39 @@
 import pandas
 from Banding import Bands
+from MovieDB import DB
 
 bands = Bands()
+db = DB()
 
 import json
 
 class Analyse(object):
 
     def __init__(self, file):
-        self.df = pandas.read_json(file)
+        self.file = file
+        self.df = self.load_dataframe()
+        print (self.df)
+        #self.df = pandas.read_json(file)
         self.field_info = self.set_field_info()
         self.number_fields = self.set_number_fields(self.field_info)
         self.splitter_fields = self.set_splitter_fields(self.field_info)
         self.index_field = self.set_index_fields(self.field_info)[0]
+
+    def load_dataframe(self):
+        '''
+        Queriers either the bechdel database or a raw file
+        :return: Dictionary of data
+        '''
+        if self.file:
+            print('getting json')
+            return pandas.read_json(self.file)
+        else:
+            print ('getting db')
+            data =  db.get_data()
+            return pandas.DataFrame(data)
+
+
+
 
     def set_field_info(self):
         '''
@@ -125,9 +146,11 @@ class Analyse(object):
 
 
 if __name__=='__main__':
-    data = Analyse('data\\bechdel_data.json')
-    blah = data.get_bar_json('Gross','Bechdel', 'T')
-    #blah = data.get_scatter_json('Rated', 'imdbRating','imdbRating', 'Metascore')
+    #data = Analyse('data\\bechdel_data.json')
+    data = Analyse('')
+    #blah = data.get_bar_json('imdbRating','Bechdel', 'T')
+    print('hello')
+    blah = data.get_scatter_json('Gross', 'imdbRating','imdbRating', 'Metascore')
     print(blah)
 
 
