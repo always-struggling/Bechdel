@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>The Bechdel Test</title>
+        <link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Raleway|Roboto|Lora|Open+Sans+Condensed:300" rel="stylesheet">
+		<script type="text/javascript" src="../d3/d3.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/get_data.js"></script>
+        <script type="text/javascript" src="../js/svg.js"></script>        
+        <link rel="stylesheet" href="bechdel_title.css">
+        <link rel="stylesheet" href="bechdel_svg.css">
+        
+   	</head>
+    
+    <body>
+    
+        <div class="main_title"></div>      
+        
+        <div class="graphs starthidden">
+            <p class="label">GRAPHS</p>
+            <div class="graph_buttons">
+            </div>
+        </div>
+        
+        <div class="fields starthidden">
+            <p class="label">FIELDS</p>
+            <div class="Z" >
+                <p class="field_label">Z</p>
+            </div>
+            <div class="X" >
+                <p class="field_label">X</p>
+            </div>
+            <div class="Y" >
+                <p class="field_label">Y</p>
+            </div>
+        </div>
+        
+        <script>
+        
+            /* --------------------------------------------------------------------------------*/
+            // SETUP //
+            /* --------------------------------------------------------------------------------*/
+            
+            var sql = 'data\\bechdel_data.json'
+            var request = {'location': sql, 'type':'file'};
+            var metadata = get_data('start', request);
+            console.log(metadata);
+            var s_fields = metadata['scatter'];
+            var bx_fields = metadata['bar'];         
+            var title = metadata['title'];
+            var by_fields = ['Total', 'Percentage'];
+            var z_fields = ['Pass', 'Fail'];
+
+            var graph;
+            var x;
+            var y;
+            var z = 'bechdel';
+            var t = title;
+            
+            // Setup
+            make_title(title);
+            make_graph_button('bar', bx_fields, by_fields);
+            make_graph_button('scatter', s_fields, s_fields);     
+            make_z_button(z_fields, 'Z');     
+
+            $(document).ready(function() {
+                show_object('.main_title');
+                show_object('.starthidden');
+                setTimeout(function() {
+                    show_object('.graph_buttons');
+                },   2000); 
+
+            });
+
+            /* --------------------------------------------------------------------------------*/
+            // SVG //
+            /* --------------------------------------------------------------------------------*/
+            
+            // Set margins, height and width for our svg element.
+            var margin = {top: 40, right: 70, bottom: 70, left: 70};
+            var w = 900 - margin.left - margin.right;
+            var h = 450 - margin.top - margin.bottom;
+            var dur = 2500
+
+
+            // Create our svg element, this will be the container for our data visualisations
+            var svg = d3.select("body")
+                        .append("svg")
+                        .attr("width",  w + margin.left + margin.right)
+                        .attr("height", h + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                        
+            // Append clip path to our SVG
+            svg.append("clipPath")
+               .attr("id", "chart-area")
+               .append("rect")
+               .attr("x", 0)
+               .attr("y", 0)
+               .attr("width", w )
+               .attr("height", h );
+                        
+            // Define default scale
+            var fyScale = d3.scaleBand().range([h,0]);
+            var fxScale = d3.scaleBand().range([0,w]);         
+
+            // Define x-axis
+            var xAxis = d3.axisBottom()
+                          .scale(fxScale);
+                                   
+            // Define y-axis
+            var yAxis = d3.axisLeft()
+                          .scale(fyScale);           
+            
+            //Append x-axis   
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + h  + ")")
+                .call(xAxis);
+
+            //Append y-axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(0,0)")
+                .call(yAxis)
+                .selectAll("text")	
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", function(d) {
+                       return "rotate(0)" 
+                }); 
+
+                
+            /* --------------------------------------------------------------------------------*/
+            // BUTTON FUNCTIONS //
+            /* --------------------------------------------------------------------------------*/
+            
+            // Creates our title
+            function make_title(P_title) {
+                    
+                // Define element
+                var r = $('<a class="title info">'+P_title+'</a>');
+                // Append element
+                $(  ".main_title" ).append( r ).hide();            
+                
+            };
+                
+            
+            // Function - Creates our Z Buttons
+            function make_z_button (P_fields) {
+            
+                // Define new element - div that will hold our buttons
+                var r = $('<div class="z_buttons">');
+                
+                // Append new element
+                $(".Z").append( r );
+                
+                // Loop through our fields
+                $.each(P_fields, function(d, i) {
+                    var r = $(' <button class="z_button clicked '+i+'" axis="z" id="'+i+'">'+i+'</button>');                  
+
+                    r.on('click', function () {
+                        
+                        // Apply 'clicked' effect
+                        $(this).toggleClass("clicked"); 
+                        
+                        // Update svg color elements
+                        update_z_colors($(this).attr('id'));
+                    });
+                    
+                    // Append new element
+                    $(".Z .z_buttons")
+                        .append( r.prop('disabled', true) )
+                        .hide();
+
+                });
+                
+                var r = $(' <button class="z_button toggle" axis="z" id="toggle">Toggle</button>'); 
+                
+                r.on('click', function () {
+                
+                        // Update svg color elements
+                        update_z_colors($(this).attr('id'));
+                });
+                    
+                // Append new element
+                $(".Z .z_buttons")
+                    .append( r.prop('disabled', true) )
+                    .hide();
+                
+            };
+        
+            // Function - Creates our Graph Buttons
+            function make_graph_button (P_graph) {
+            
+                // Define new element
+                var r = $(' <button class="graph_button" axis="i" id="'+P_graph+'">'+P_graph+'</button>');
+                
+                // Bind click event to element
+                r.on('click', function () {
+                
+                    show_object('svg');
+                    show_object('.z_buttons');
+
+                    
+                    // remove bars/circles
+                    remove_data(graph)
+                    
+                    // Set the graph variable
+                    graph = P_graph;
+                 
+                    // Set buttons as clicked
+                    $('.graph_button').removeClass('clicked');
+                    $(this).addClass('clicked');
+
+                    
+                    // Disable all buttons
+                    $('button').prop('disabled', true);
+                    setTimeout(function() {
+                        $('button').prop('disabled', false);
+                        $('#'+P_graph).prop('disabled', true);
+                    },   dur);
+                                        
+                    // Reset vales for x and y;
+                    x = '';
+                    y = '';
+                    
+                    // Determine the fields to append
+                    if (P_graph == 'bar') {
+                        var x_fields = bx_fields;
+                        var y_fields = by_fields;
+                    } else {
+                        var x_fields = s_fields;
+                        var y_fields = s_fields;                
+                    };
+                    
+                    // Switch field buttons
+                    remove_object('axis_buttons', function() {
+                        make_field_buttons(y_fields, 'Y');
+                        make_field_buttons(x_fields, 'X');
+                        show_object('.axis_buttons');
+                    });
+                });
+                
+                // Append new element
+                $(  ".graph_buttons" ).append( r ).hide();
+
+
+            };
+            
+            // Function - Creates the field buttons for an axis
+            function make_field_buttons (P_fields, P_axis) {
+            
+                // Define new element - div that will hold our buttons
+                var r = $('<div class="axis_buttons">');
+                
+                // Bind click event to new element
+                $("."+P_axis).append( r )
+                
+                // Loop through our fields
+                $.each(P_fields, function(d, i) {
+                    
+                    // Define new button element
+                    var r = $('<button class="field_button" axis="'+P_axis+'" id="'+i+'"> '+i+' </button>');
+                    
+                    // Bind click event to new element
+                    r.on('click', function() { 
+                        
+                        // Apply effect to show button is clicked
+                        $("button[axis='"+P_axis+"']").removeClass("clicked");
+                        $(this).addClass("clicked");
+                        
+                        // get axis and col of clicked button
+                        var field = d3.select(this).attr("id");
+                        var axis = d3.select(this).attr("axis");
+                        
+                        // set x or y
+                        if (axis == 'X') {
+                            x = field;
+                        } else {
+                            y = field;
+                        }; 
+                        
+                        // If we have populated both x and y-axis
+                        // then we can create the graph. 
+                        if (y && x ) {
+                        
+                            // Disable buttons
+                            $('.field_button').prop('disabled', true);
+                            setTimeout(function() {
+                                $('.field_button').prop('disabled', false);
+                            },   dur);
+                        
+                            // remove bars/circles
+                            remove_data(graph)
+                            
+                           if ( graph == 'bar' ) {                                
+                                // get new data
+                                arr =  {'x': x, 'z':z, 'y': 'T'};
+                                bar_data = get_data(graph, arr);
+
+                                setTimeout(function(){
+                                    make_grouped_bar(bar_data, x);
+                                }, dur);
+                            } else {
+                                // get new data
+                                arr = {'x': x, 'y': y, 'z': z, 't':t};
+                                scatter_data = get_data(graph, arr);   
+                                
+                                // create scatter graph
+                                setTimeout(function(){
+                                    make_scatter(scatter_data, x, y, z, t);
+                              }, 3000);                               
+                            };
+                        } else {
+                            console.log('print message to click other graph')
+                        }; 
+                        
+                    });
+                    
+                    // Append new element
+                    $("."+P_axis+" .axis_buttons"  )
+                        .append( r.prop('disabled', true) )
+                        .hide();
+                                                           
+                });
+                                
+            };
+            
+        // Fades in an object 
+        function show_object (P_object) {
+         
+            $(P_object).fadeIn(2000);
+
+        };
+
+        // Removes an object
+        function remove_object(P_object, callback) {
+            
+            if ($('.'+P_object).length) {
+                $('.'+P_object).fadeOut(1000, function() { $(this).remove(); });
+                setTimeout(function() {
+                    callback();   
+                },   1000);  
+            } else {
+                callback(); 
+            };
+        };
+           
+                
+                    
+        </script>
+    
+    </body>
+    
+    
+</html>
