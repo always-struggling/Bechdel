@@ -19,7 +19,7 @@ class Startup(object):
         :param sql:
         :return:
         '''
-        return pandas.read_sql_query(sql, psycopg2.connect("dbname=Bechdel user=postgres password=oreflan@51") )
+        return pandas.read_sql_query(sql, psycopg2.connect("dbname=Bechdel user=postgres password=") )
 
     def load_from_file(self, file):
         '''
