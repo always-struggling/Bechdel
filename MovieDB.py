@@ -4,7 +4,7 @@ import json
 class DB(object):
 
     def __init__(self):
-        self.conn = psycopg2.connect("dbname=Bechdel user=postgres password=")
+        self.conn = psycopg2.connect("dbname=Bechdel user=postgres password=oreflan@51")
         self.cur = self.conn.cursor()
 
     def insert_bechdel_info(self, row):
@@ -31,17 +31,8 @@ class DB(object):
         self.cur.execute('''SELECT imdb_id
                               FROM bechdel
                              WHERE imdb_id NOT IN (SELECT imdb_id
-                                                    FROM movie_info)
-                             LIMIT 100''')
+                                                    FROM movie_info)''')
         result = [d[0] for d in self.cur.fetchall()]
-        return result
-
-    def get_data(self):
-        self.cur.execute('''select *
-                              from bechdel a
-                              join movie_info b
-                                on a.imdb_id = b.imdb_id''')
-        result = self.cur.fetchall()
         return result
 
     def commit(self):

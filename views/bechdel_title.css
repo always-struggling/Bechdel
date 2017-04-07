@@ -38,6 +38,10 @@ div.axis_buttons{
     position:absolute; 
     top: 40px;
 } 
+div.z_buttons{
+    position:absolute; 
+    top: 40px;
+} 
 
 .label {
     color: Grey;
@@ -76,9 +80,20 @@ button {
 }
 
 button:hover:enabled {
-    border: 1.5px solid grey;
+    border: 1.5px solid;
 }
 
-.clicked{
-    border: 1.5px solid grey;
+button:focus {
+    outline:0;
+}
+
+.clicked {
+    border: 1.5px solid;
+}
+
+.Pass {
+     color: green;
+}
+.Fail {
+     color: red;
 }

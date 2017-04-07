@@ -1,6 +1,6 @@
-from math import floor, ceil, log10, pow
+from math import pow
 
-class Bands(object):
+class Bands:
 
     def round_up(self, x):
         self.get_base(x)
@@ -8,6 +8,18 @@ class Bands(object):
     def get_base(self, x):
         # Note: this will not work for decimal places
         return len(str(int(x))) - 1
+
+    def get_banding(self, mn, mx):
+        cs = self.get_chunk_size(mn, mx)
+        mn = self.get_min_value(mn, cs)
+        bands = self.get_bands(mn, mx, cs)
+        labels = self.get_labels(bands)
+        return bands, labels
+
+    def get_chunk_size(self, x1, x2):
+        diff = abs(x2 - x1)
+        chunk_size = self.nicen_number(diff * 0.1)
+        return chunk_size
 
     def nicen_number(self, x):
         base = self.get_base(x)
@@ -19,11 +31,6 @@ class Bands(object):
         else:
             first_digits = 10
         return first_digits * pow(10, base)
-
-    def get_chunk_size(self, x1, x2):
-        diff = abs(x2 - x1)
-        chunk_size = self.nicen_number(diff * 0.1)
-        return chunk_size
 
     def get_min_value(self, x, chunk_size):
         if chunk_size == 1:
@@ -38,7 +45,7 @@ class Bands(object):
             x -= last
         return x
 
-    def get_band(self, mn, mx, cs):
+    def get_bands(self, mn, mx, cs):
         x = mn
         bands = [x]
         while x < mx:
@@ -48,18 +55,11 @@ class Bands(object):
 
 
     def get_labels(self, bands):
-        labels = {}
+        labels = []
         mid = (bands[1] - bands[0]) / 2
-        for i in range(0,len(bands)):
-            labels[i] = int((bands[i]+mid))
-
+        for i in range(0,len(bands) - 1):
+            labels.append(bands[i]+mid)
         return labels
 
-    def get_banding(self, mn, mx):
-        cs = self.get_chunk_size(mn, mx)
-        mn = self.get_min_value(mn, cs)
-        bands = self.get_band(mn, mx, cs)
-        labels = self.get_labels(bands)
-        return bands, labels
 
 

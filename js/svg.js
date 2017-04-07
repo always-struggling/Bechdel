@@ -61,8 +61,8 @@
             
         };  
 
-    function make_scatter(P_data, x, y, r, z, t) {
-                                    
+    function make_scatter(P_data, x, y, z, t) {
+                 
         // Define our scales.
         // We will set the range once we have loaded the data. 
         var xScale = d3.scaleLinear()
@@ -76,9 +76,9 @@
                        
                                     
         //Define the domains of our scales
-        xScale.domain([0, d3.max(P_data, function(d) {return d[x]; })]);
+        xScale.domain([d3.min(P_data, function(d) {return d[x]; }), d3.max(P_data, function(d) {return d[x]; })]);
         
-        yScale.domain([0, d3.max(P_data, function(d) {return d[y]; })]);
+        yScale.domain([d3.min(P_data, function(d) {return d[y]; }), d3.max(P_data, function(d) {return d[y]; })]);
                             
         // update axes
         update_axes(P_data, xScale, yScale);
@@ -92,7 +92,7 @@
            .append("circle")
            .attr("cx", w/2)
            .attr("cy", h/2)
-           .attr("r", 4)
+           .attr("r", 2)
            .attr('id', function(d) {
                return d[z];
            })
@@ -132,12 +132,9 @@
            .attr("cy", function(d) {
                return yScale(d[y]);
            })
-           .attr("r",function(d) {
-               return 3;
-           })
            .attr("fill-opacity", 0.75)
            .attr("fill", function(d){
-               if (d[z] == 0) {
+               if (d[z] == 'Fail') {
                    return 'red';
               } else {
                    return 'green';
@@ -309,7 +306,7 @@
                .duration(2500)
                .attr("cx", w/2)
                .attr("cy", h/2)
-               .attr("r", 4)
+               .attr("r", 0)
                .attr("fill", 'white')
                .remove()
         };

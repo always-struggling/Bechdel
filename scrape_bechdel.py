@@ -22,7 +22,7 @@ class ScrapeBechdel(object):
 
     def get_all_bechdel_films(self):
         films = []
-        for i in range(0, 1):
+        for i in range(0, 36):
             films.extend(self.scrape_bechdel_page(i))
             time.sleep(3)
         return [self.get_bechdel_film_info(e) for e in films]
@@ -57,11 +57,10 @@ class ScrapeExtraInfo(object):
         for m in self.movies:
             c += 1
             movie_info = self.get_movie_info(m)
-            print (movie_info)
             if movie_info:
                 db.insert_movie_info(movie_info)
-                if divmod(c,2)[1]==0:
-                    print ('commit - c')
+                if divmod(c,50)[1]==0:
+                    print ('committing - ' + c)
                     db.commit()
 
     def get_movie_info(self, imdb_id):
@@ -147,8 +146,7 @@ if __name__=='__main__':
     #src.get_bechdel_data()
     src = ScrapeExtraInfo()
     src.run()
-    blah = src.get_movie_info('tt6527026')
-    print(blah)
+
 
 
 
